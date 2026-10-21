@@ -53,7 +53,6 @@ namespace CHPAPI {
         uint8_t powerLevel; // 1-10
         ErrorState errorState;
         float inputVoltage;
-        float glowPlugCurrent;
         float heatExchangerTemperature;
         uint16_t pumpFrequency;
         uint16_t fanRPM;
