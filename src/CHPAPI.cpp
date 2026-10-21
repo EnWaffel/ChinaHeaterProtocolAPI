@@ -72,7 +72,8 @@ private:
     }
 
     bool readFrame() {
-        frame[PROT_IDX_IDENT] = stream.read();
+        READ_BYTE(frame[PROT_IDX_IDENT]);
+
         if (frame[PROT_IDX_IDENT] != 0xAA) {
             return false;
         }
@@ -81,31 +82,43 @@ private:
         READ_BYTE(frame[PROT_IDX_CMD]);
         READ_BYTE(frame[PROT_IDX_LEN]);
 
-        for (uint8_t i = 0; i < frame[PROT_IDX_LEN]; i++) {
-            uint8_t idx = PROT_IDX_DATA_BEGIN + i;
-            if (idx >= FRAME_SIZE) {
-                lastError = Error::INVALID_FRAME_LENGTH;
-                return false;
-            }
+        const size_t dataLength = frame[PROT_IDX_LEN];
+        const size_t checksumIndex = PROT_IDX_DATA_BEGIN + dataLength;
 
-            READ_BYTE(frame[idx]);
+        if (checksumIndex >= FRAME_SIZE) {
+            lastError = Error::INVALID_FRAME_LENGTH;
+            return false;
         }
 
-        uint8_t expectedChecksum = calculateChecksum(frame, frame[PROT_IDX_LEN]);
-        uint8_t receivedChecksum = frame[frame[PROT_IDX_LEN] - 1];
+        for (size_t i = 0; i < dataLength; i++) {
+            READ_BYTE(frame[PROT_IDX_DATA_BEGIN + i]);
+        }
 
+        READ_BYTE(frame[checksumIndex]);
+
+        uint8_t expectedChecksum = 0;
+        for (size_t i = PROT_IDX_CMD; i < checksumIndex; i++) {
+            expectedChecksum += frame[i];
+        }
+
+        const uint8_t receivedChecksum = frame[checksumIndex];
         if (expectedChecksum != receivedChecksum) {
             lastError = Error::INVALID_CHECKSUM;
             return false;
         }
 
         switch (frame[PROT_IDX_DEVICE_ID]) {
-            case DEVICE_ID_CONTROLLER: readControllerFrame(); break;
-            case DEVICE_ID_MAIN_UNIT: readMainUnitFrame(); break;
-            default: {
+            case DEVICE_ID_CONTROLLER:
+                readControllerFrame();
+                break;
+
+            case DEVICE_ID_MAIN_UNIT:
+                readMainUnitFrame();
+                break;
+
+            default:
                 lastError = Error::UNKNOWN_DEVICE_ID;
                 return false;
-            }
         }
 
         return true;
