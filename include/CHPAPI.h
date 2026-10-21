@@ -53,10 +53,10 @@ namespace CHPAPI {
         uint8_t powerLevel; // 1-10
         ErrorState errorState;
         float inputVoltage;
-        float heatExchangerTemperature;
-        uint16_t pumpFrequency;
+        float heatExchangerTemperature; // in Celsius
+        uint16_t pumpFrequency; // in Hz
         uint16_t fanRPM;
-        uint16_t stateDuration;
+        uint16_t stateDuration; // in seconds
     };
 
     class ProtocolMonitor {
