@@ -1,10 +1,20 @@
 #include <Arduino.h>
+#include "CHPAPI.h"
+
+CHPAPI::ProtocolMonitor* mon;
 
 void setup() {
     Serial.begin(112500);
-    Serial.println("Hello, world!");
+    
+    mon = new CHPAPI::ProtocolMonitor(Serial);
 }
 
 void loop() {
-
+    if (!mon->read()) {
+        if (mon->getLastError() != CHPAPI::Error::NO_ERROR) {
+            Serial.println("ERROR!");
+        }
+    } else {
+         
+    }
 }
