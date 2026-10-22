@@ -1,0 +1,21 @@
+{
+  "name": "ChinaHeaterProtocolAPI",
+  "version": "1.0.0",
+  "description": "Get data from some heaters that are using the vevor protocol",
+  "keywords": "heater, protocol, api, china, vevor",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/EnWaffel/ChinaHeaterProtocolAPI.git"
+  },
+  "authors":
+  [
+    {
+      "name": "EnWaffel",
+      "maintainer": true
+    }
+  ],
+  "license": "MIT",
+  "frameworks": "*",
+  "platforms": "arduino"
+}
